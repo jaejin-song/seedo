@@ -1,13 +1,16 @@
+import { calculatorSchema } from "@/dto/calculator.dto";
+import { UseFormReturn } from "react-hook-form";
+import { z } from "zod";
 import { create } from "zustand";
 
+type CalculatorSchema = z.infer<typeof calculatorSchema>;
+
 interface CalculatorStore {
-  method: 1 | 2;
-  setMethod: (method: CalculatorStore["method"]) => void;
+  form: UseFormReturn<CalculatorSchema> | null;
+  setForm: (form: UseFormReturn<CalculatorSchema>) => void;
 }
 
-const useCalculatorStore = create<CalculatorStore>((set) => ({
-  method: 1,
-  setMethod: (method) => set({ method }),
+export const useCalculatorStore = create<CalculatorStore>((set) => ({
+  form: null,
+  setForm: (form) => set({ form }),
 }));
-
-export default useCalculatorStore;

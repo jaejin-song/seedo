@@ -20,17 +20,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@repo/ui/components/form";
-import useCalculatorStore from "@/store/useCalculatorStore";
+import { useCalculatorStore } from "@/store/useCalculatorStore";
 import CalculatorLayout from "@/components/calculator-layout";
 
 // hooks
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { calculatorSchema } from "@/dto/calculator.dto";
 import { z } from "zod";
 
 import { methodMap } from "@/const/calculator";
+import { MethodCard } from "@/components/calculator/method-card";
+import { PeriodAmountCard } from "@/components/calculator/period-amount-card";
+import { ProductCard } from "@/components/calculator/product-card";
 
 const titles = {
   1: "투자 금액, 기간과 투자 유형을 입력해주세요",
@@ -54,11 +57,18 @@ type CalculatorSchema = z.infer<typeof calculatorSchema>;
 
 export default function Page() {
   const [step, setStep] = useState<1 | 2>(1);
-  // const { method } = useCalculatorStore();
 
   const form = useForm<CalculatorSchema>({
     resolver: zodResolver(calculatorSchema),
+    defaultValues: {
+      method: "1",
+    },
   });
+  const setForm = useCalculatorStore((state) => state.setForm);
+
+  useEffect(() => {
+    setForm(form);
+  }, [form, setForm]);
 
   function onSubmit(values: CalculatorSchema) {
     console.log(values);
@@ -84,66 +94,8 @@ export default function Page() {
     return (
       <CalculatorLayout step={1} title={titles[1]}>
         <div className="flex justify-center gap-6">
-          <Card className="w-sm">
-            <CardHeader>
-              <CardTitle>투자 유형</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <FormField
-                control={form.control}
-                name="method"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="max-w-sm"
-                      >
-                        {methods.map((method) => (
-                          <Label
-                            className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border border-neutral-700 p-4 has-[[data-state=checked]]:border-green-600 has-[[data-state=checked]]:bg-green-50 dark:has-[[data-state=checked]]:border-green-900 dark:has-[[data-state=checked]]:bg-green-950"
-                            key={method.id}
-                          >
-                            <RadioGroupItem
-                              value={method.id}
-                              id={method.name}
-                              className="shadow-none data-[state=checked]:border-green-600 data-[state=checked]:bg-green-600 *:data-[slot=radio-group-indicator]:[&>svg]:fill-white *:data-[slot=radio-group-indicator]:[&>svg]:stroke-white"
-                            />
-                            <div className="grid gap-1 font-normal">
-                              <div className="font-medium">{method.name}</div>
-                              <div className="text-muted-foreground leading-snug">
-                                {method.description}
-                              </div>
-                            </div>
-                          </Label>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                  </FormItem>
-                )}
-              ></FormField>
-            </CardContent>
-          </Card>
-          <Card className="w-sm">
-            <CardHeader>
-              <CardTitle>투자 기간</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Card Content</p>
-            </CardContent>
-
-            <CardContent className="my-3">
-              <Separator />
-            </CardContent>
-
-            <CardHeader>
-              <CardTitle>투자 금액</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Input placeholder="투자금액을 입력해주세요" />
-            </CardContent>
-          </Card>
+          <MethodCard />
+          <PeriodAmountCard />
         </div>
       </CalculatorLayout>
     );
@@ -153,7 +105,7 @@ export default function Page() {
     return (
       <CalculatorLayout step={2} title={titles[2]}>
         <div className="flex justify-center">
-          <Card className="w-3xl">stock</Card>
+          <ProductCard />
         </div>
       </CalculatorLayout>
     );
@@ -166,7 +118,7 @@ export default function Page() {
         <div className="flex w-full h-20 fixed bottom-0 bg-card px-30 justify-between items-center">
           <div className="flex flex-col">
             {previewItems.map(({ label, value }) => (
-              <div className="flex items-center gap-2">
+              <div key={label} className="flex items-center gap-2">
                 <span className="text-muted-foreground text-sm font-semibold">
                   {label}
                 </span>
