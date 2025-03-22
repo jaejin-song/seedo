@@ -1,0 +1,1 @@
+ALTER TABLE "list" ALTER COLUMN "symbol" SET DATA TYPE varchar(20);
