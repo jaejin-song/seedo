@@ -36,6 +36,7 @@ import { PeriodAmountCard } from "@/components/calculator/period-amount-card";
 import { ProductCard } from "@/components/calculator/product-card";
 import { add, format } from "date-fns";
 import { kunit } from "@/lib/number";
+import { PreviewContent } from "@/components/calculator/preview-content";
 
 const titles = {
   1: "투자 금액, 기간과 투자 유형을 입력해주세요",
@@ -128,17 +129,7 @@ export default function Page() {
       <form onSubmit={form.handleSubmit(onSubmit)}>
         {step === 1 ? <Page1 /> : <Page2 />}
         <div className="flex w-full h-24 fixed bottom-0 bg-card px-30 justify-between items-center">
-          <div className="flex flex-col">
-            <span>preview</span>
-            {/* {previewItems.map(({ label, value }) => (
-              <div key={label} className="flex items-center gap-2">
-                <span className="text-muted-foreground text-sm font-semibold">
-                  {label}
-                </span>
-                <span className="text-sm font-semibold">{value}</span>
-              </div>
-            ))} */}
-          </div>
+          <PreviewContent />
           <div className="flex gap-3">
             {step === 1 ? (
               <Button type="button" size="lg" onClick={() => setStep(2)}>
