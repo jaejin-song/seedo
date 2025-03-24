@@ -34,6 +34,8 @@ import { methodMap } from "@/const/calculator";
 import { MethodCard } from "@/components/calculator/method-card";
 import { PeriodAmountCard } from "@/components/calculator/period-amount-card";
 import { ProductCard } from "@/components/calculator/product-card";
+import { add, format } from "date-fns";
+import { kunit } from "@/lib/number";
 
 const titles = {
   1: "투자 금액, 기간과 투자 유형을 입력해주세요",
@@ -62,6 +64,9 @@ export default function Page() {
     resolver: zodResolver(calculatorSchema),
     defaultValues: {
       method: "1",
+      startDate: add(new Date(), { months: -3 }),
+      endDate: new Date(),
+      amount: kunit(1000, "만"),
     },
   });
   const setForm = useCalculatorStore((state) => state.setForm);
@@ -74,21 +79,28 @@ export default function Page() {
     console.log(values);
   }
 
-  const watchedValues = useWatch({
-    control: form.control,
-  });
+  // const watchedValues = useWatch({
+  //   control: form.control,
+  // });
 
   const labels: Record<keyof CalculatorSchema, string> = {
     method: "투자 유형",
+    startDate: "start",
+    endDate: "end",
+    amount: "amount",
   };
-  const transforms = {
+  const transforms: Record<keyof CalculatorSchema, Function> = {
     method: (val: "1" | "2") => methodMap[val],
+    startDate: (val: Date) => format(val, "yyyy.MM.dd"),
+    endDate: (val: Date) => format(val, "yyyy.MM.dd"),
+    // amount: (val: number) => val,
+    amount: (val: string) => val,
   };
 
-  const previewItems = Object.entries(watchedValues).map(([key, value]) => ({
-    label: labels[key as keyof CalculatorSchema],
-    value: transforms[key as keyof CalculatorSchema](value),
-  }));
+  // const previewItems = Object.entries(watchedValues).map(([key, value]) => ({
+  //   label: labels[key as keyof CalculatorSchema],
+  //   value: transforms[key as keyof CalculatorSchema](value),
+  // }));
 
   function Page1() {
     return (
@@ -115,25 +127,31 @@ export default function Page() {
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         {step === 1 ? <Page1 /> : <Page2 />}
-        <div className="flex w-full h-20 fixed bottom-0 bg-card px-30 justify-between items-center">
+        <div className="flex w-full h-24 fixed bottom-0 bg-card px-30 justify-between items-center">
           <div className="flex flex-col">
-            {previewItems.map(({ label, value }) => (
+            <span>preview</span>
+            {/* {previewItems.map(({ label, value }) => (
               <div key={label} className="flex items-center gap-2">
                 <span className="text-muted-foreground text-sm font-semibold">
                   {label}
                 </span>
-                <span className="text-sm font-bold">{value}</span>
+                <span className="text-sm font-semibold">{value}</span>
               </div>
-            ))}
+            ))} */}
           </div>
           <div className="flex gap-3">
             {step === 1 ? (
-              <Button size="lg" onClick={() => setStep(2)}>
+              <Button type="button" size="lg" onClick={() => setStep(2)}>
                 다음으로
               </Button>
             ) : (
               <>
-                <Button size="lg" variant="outline" onClick={() => setStep(1)}>
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="outline"
+                  onClick={() => setStep(1)}
+                >
                   이전으로
                 </Button>
                 <Button size="lg">다음으로</Button>

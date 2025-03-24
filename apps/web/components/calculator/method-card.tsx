@@ -26,7 +26,7 @@ export function MethodCard() {
   const form = useCalculatorStore((state) => state.form);
 
   return (
-    <Card className="w-sm">
+    <Card className="w-md">
       <CardHeader>
         <CardTitle>투자 유형</CardTitle>
       </CardHeader>
