@@ -12,7 +12,7 @@ const METHOD_LABEL = {
 export function PreviewContent() {
   const form = useCalculatorStore((state) => state.form);
 
-  const { method, startDate, endDate, amount } = useWatch({
+  const { method, startDate, endDate, amount, product } = useWatch({
     control: form?.control,
   });
 
@@ -62,7 +62,12 @@ export function PreviewContent() {
 
       <Separator className="bg-neutral-500 my-1 mx-4" orientation="vertical" />
 
-      <div>symbol</div>
+      <div className="flex flex-col gap-2">
+        <span className="text-muted-foreground text-base font-semibold">
+          선택한 상품
+        </span>
+        <div>{product?.map((el) => el.name).join("")}</div>
+      </div>
     </div>
   );
 }

@@ -22,4 +22,13 @@ export class ListService {
       throw error;
     }
   }
+
+  async getSearchList(search: string){
+    try {
+      return await this.listRepository.getSearchList(search);
+    } catch(error) {
+      console.error('Failed to fetch search list');
+      throw error;
+    }
+  }
 }

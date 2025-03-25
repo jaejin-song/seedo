@@ -19,7 +19,7 @@ export default function CalculatorLayout({
       <div className="flex text-4xl justify-center mb-6 font-semibold">
         {title}
       </div>
-      <div>{children}</div>
+      <div className="mb-40">{children}</div>
     </div>
   );
 }

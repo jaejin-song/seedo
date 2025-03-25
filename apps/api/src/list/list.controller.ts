@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ListService } from './list.service';
 
 @Controller('list')
@@ -23,5 +23,15 @@ export class ListController {
       success: true,
       data,
     };
+  }
+
+  @Get('/search')
+  async getSearchList(@Query('search') search: string){
+    const data = await this.listService.getSearchList(search);
+
+    return {
+      success: true,
+      data,
+    }
   }
 }
