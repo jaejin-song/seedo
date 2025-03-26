@@ -19,6 +19,7 @@ import { add } from "date-fns";
 import { kunit } from "@/lib/number";
 import { PreviewContent } from "@/components/calculator/preview-content";
 import { PreviewSheet } from "@/components/calculator/preview-sheet";
+import { shallow, useShallow } from "zustand/shallow";
 
 const titles = {
   1: "투자 금액, 기간과 투자 유형을 입력해주세요",
@@ -28,8 +29,6 @@ const titles = {
 type CalculatorSchema = z.infer<typeof calculatorSchema>;
 
 export default function Page() {
-  // const [step, setStep] = useState<1 | 2>(1);
-
   const form = useForm<CalculatorSchema>({
     resolver: zodResolver(calculatorSchema),
     defaultValues: {
@@ -40,11 +39,22 @@ export default function Page() {
       product: [],
     },
   });
-  const { step, setForm } = useCalculatorStore();
+  const { step, setStep, setForm } = useCalculatorStore(
+    useShallow((state) => ({
+      step: state.step,
+      setStep: state.setStep,
+      setForm: state.setForm,
+    }))
+  );
 
   useEffect(() => {
     setForm(form);
   }, [form, setForm]);
+
+  useEffect(() => {
+    console.log("form reset");
+    form.reset();
+  }, []);
 
   function onSubmit(values: CalculatorSchema) {
     console.log(values);

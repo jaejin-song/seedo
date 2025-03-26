@@ -4,6 +4,7 @@ import { API_ROUTES } from "@/const/api";
 import { apiInstance } from "@/lib/ky";
 import { CalculatorResult } from "@/types/calculator";
 import { Button } from "@repo/ui/components/button";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 async function fetchResult(searchParams: {
@@ -13,13 +14,17 @@ async function fetchResult(searchParams: {
   symbol: string;
   percent: string;
 }) {
-  const res = await apiInstance.get(API_ROUTES.CALCULATOR.GET.url, {
-    searchParams,
-  });
+  try {
+    const res = await apiInstance.get(API_ROUTES.CALCULATOR.GET.url, {
+      searchParams,
+    });
 
-  if (!res.ok) return undefined;
+    if (!res.ok) return undefined;
 
-  return (await res.json<{ success: true; data: CalculatorResult }>()).data;
+    return (await res.json<{ success: true; data: CalculatorResult }>()).data;
+  } catch (error) {
+    console.error("Failed to get calculator result:>>", error);
+  }
 }
 
 export default async function Page({
@@ -37,7 +42,7 @@ export default async function Page({
 
   const result = await fetchResult(_searchParams);
   if (!result) {
-    redirect("/");
+    redirect("/calculator");
   }
 
   return (
@@ -46,7 +51,9 @@ export default async function Page({
         <div className="flex flex-col gap-6">
           <ResultInfo className="w-4xl" result={result} />
           <div className="flex justify-center gap-6">
-            <Button size="lg">다시 계산하기</Button>
+            <Button size="lg" asChild>
+              <Link href="/calculator">다시 계산하기</Link>
+            </Button>
             <Button size="lg" variant="outline">
               결과 저장하기
             </Button>

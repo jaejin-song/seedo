@@ -1,3 +1,5 @@
+"use client";
+
 import { useTrendingList } from "@/hooks/use-trending-list";
 import { useCalculatorStore } from "@/store/useCalculatorStore";
 import {
@@ -7,7 +9,7 @@ import {
   CardTitle,
 } from "@repo/ui/components/card";
 import { Input } from "@repo/ui/components/input";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { debounce } from "es-toolkit";
 
 export function ProductCard() {
@@ -15,11 +17,12 @@ export function ProductCard() {
   const { data, updateList } = useTrendingList();
   const form = useCalculatorStore((state) => state.form);
 
-  const debouncedSearch = debounce(updateList, 1000);
+  // debounce를 사용하면 리렌더링 무한루프 걸리는 이슈 존재
+  // const debouncedSearch = debounce(updateList, 1000);
 
-  useEffect(() => {
-    debouncedSearch(search);
-  }, [search, debouncedSearch]);
+  // useEffect(() => {
+  //   debouncedSearch(search);
+  // }, [search, debouncedSearch]);
 
   return (
     <Card className="w-4xl">

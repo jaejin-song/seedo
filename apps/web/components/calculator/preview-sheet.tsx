@@ -6,9 +6,16 @@ import { Button } from "@repo/ui/components/button";
 import { useWatch } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { useShallow } from "zustand/shallow";
 
 export function PreviewSheet() {
-  const { step, setStep, form } = useCalculatorStore();
+  const { step, setStep, form } = useCalculatorStore(
+    useShallow((state) => ({
+      step: state.step,
+      setStep: state.setStep,
+      form: state.form,
+    }))
+  );
 
   const { product } = useWatch({ control: form?.control });
 

@@ -26,7 +26,6 @@ export class CalculatorController {
       symbol: parsedSymbol,
       percent: parsedPercent,
     });
-    console.log('data :>> ', data);
 
     return {
       success: true,
