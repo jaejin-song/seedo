@@ -1,7 +1,9 @@
+import CalculatorLayout from "@/components/calculator-layout";
 import { ResultInfo } from "@/components/calculator/result-info";
 import { API_ROUTES } from "@/const/api";
 import { apiInstance } from "@/lib/ky";
 import { CalculatorResult } from "@/types/calculator";
+import { Button } from "@repo/ui/components/button";
 import { redirect } from "next/navigation";
 
 async function fetchResult(searchParams: {
@@ -39,10 +41,18 @@ export default async function Page({
   }
 
   return (
-    <div className="flex justify-center">
-      <div className="flex flex-col">
-        <ResultInfo className="w-4xl" result={result} />
+    <CalculatorLayout title="수익률 계산 결과">
+      <div className="flex justify-center">
+        <div className="flex flex-col gap-6">
+          <ResultInfo className="w-4xl" result={result} />
+          <div className="flex justify-center gap-6">
+            <Button size="lg">다시 계산하기</Button>
+            <Button size="lg" variant="outline">
+              결과 저장하기
+            </Button>
+          </div>
+        </div>
       </div>
-    </div>
+    </CalculatorLayout>
   );
 }

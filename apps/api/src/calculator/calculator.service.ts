@@ -75,6 +75,9 @@ export class CalculatorService {
       currentValue: fixedCurrentValue,
       profit,
       profitPercent,
+      startDate: date1,
+      endDate: date2,
+      duration: prices.length,
     };
   }
 }

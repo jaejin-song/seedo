@@ -18,7 +18,7 @@ export function PreviewSheet() {
 
     const startDate = format(form.getValues("startDate"), "yyyy.MM.dd");
     const endDate = format(form.getValues("endDate"), "yyyy.MM.dd");
-    console.log("symbol", form.getValues("product").join(","));
+
     const searchParams = new URLSearchParams({
       amount: form.getValues("amount").toString(),
       date: `${startDate},${endDate}`,

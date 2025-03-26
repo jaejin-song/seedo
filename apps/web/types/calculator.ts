@@ -3,4 +3,7 @@ export interface CalculatorResult {
   currentValue: number;
   profit: number;
   profitPercent: number;
+  startDate: Date;
+  endDate: Date;
+  duration: number;
 }
