@@ -52,8 +52,10 @@ export default function Page() {
   }, [form, setForm]);
 
   useEffect(() => {
-    console.log("form reset");
-    form.reset();
+    return () => {
+      setStep(1);
+      form.reset();
+    };
   }, []);
 
   function onSubmit(values: CalculatorSchema) {
