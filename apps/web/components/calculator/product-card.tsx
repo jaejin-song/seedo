@@ -24,6 +24,10 @@ export function ProductCard() {
   //   debouncedSearch(search);
   // }, [search, debouncedSearch]);
 
+  useEffect(() => {
+    updateList(search);
+  }, [search]);
+
   return (
     <Card className="w-4xl">
       <CardHeader>

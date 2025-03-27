@@ -1,6 +1,12 @@
 import { Injectable } from '@nestjs/common';
+import { format } from 'date-fns';
+import { formatAmount, formatPercent } from 'src/common/utils/format.util';
 import yahooFinance from 'yahoo-finance2';
 import { HistoricalOptionsEventsHistory } from 'yahoo-finance2/dist/esm/src/modules/historical';
+import { CalculateFn, CalculatorResultDto, InvestmentHistory, StockReturn } from './types/calculator.types';
+import { ChartOptions } from 'yahoo-finance2/dist/esm/src/modules/chart';
+
+
 
 @Injectable()
 export class CalculatorService {
@@ -18,66 +24,127 @@ export class CalculatorService {
     method: number;
     symbol: string[];
     percent: number[];
-  }) {
-    const query = symbol[0] as string;
-    const queryOptions: HistoricalOptionsEventsHistory = {
-      period1: date1,
-      period2: date2,
-      interval: '1mo',
-    };
-    const historicalData = await yahooFinance.historical(query, queryOptions);
+  }) : Promise<CalculatorResultDto> {
+
 
     // method 1 : 거치식
-    function calculateLSI(investmentAmount, stockPrices) {
-      const totalInvestment = investmentAmount;
-      const firstPrice = stockPrices[0];
-      const lastPrice = stockPrices[stockPrices.length - 1];
-      const profitRate = lastPrice / firstPrice;
-      const currentValue = investmentAmount * profitRate;
+    const calculateLSI: CalculateFn = (investAmount, quotes) => {
+      const stockReturns: StockReturn[] = [];
+      const totalInvest = investAmount;
+
+      const firstPrice = quotes[0]!.price;
+      const totalShares = totalInvest / firstPrice;
+
+      for(const quote of quotes ){
+        const { date, price } = quote;
+        
+        const currentValue = totalShares * price;
+        const profit = currentValue - totalInvest;
+        const stockReturn = profit / totalInvest;
+
+        stockReturns.push({
+          date: format(date, 'yyyy.MM'),
+          return: stockReturn,
+          returnPercent: formatPercent(stockReturn),
+          currentValue: formatAmount(currentValue),
+          profit: formatAmount(profit),
+        })
+      }
 
       return {
-        totalInvestment,
-        currentValue,
-      };
+        totalInvest,
+        stockReturns,
+      }
     }
 
     // method 2 : 적립식
-    function calculateDCA(investmentAmount, stockPrices) {
-      const totalInvestment = investmentAmount * stockPrices.length; // 총 투자금
-      const lastPrice = stockPrices[stockPrices.length - 1];
-      let totalShares = 0; // 총 매수 주식 수
+    const calculateDCA : CalculateFn = (investAmount, quotes) =>  {
+      const stockReturns: StockReturn[] = [];
+      let totalInvest = 0;
+      let totalShares = 0;
 
-      // 각 월별 주가에 따른 매수량 계산
-      stockPrices.forEach((price) => {
-        totalShares += investmentAmount / price;
-      });
+      for(const quote of quotes){
+        const { date, price } = quote;
 
-      const currentValue = totalShares * lastPrice; // 현재 평가금액
+        const shares = investAmount / price;
+        totalShares +=  shares;
+        totalInvest += investAmount;
+
+        const currentValue = totalShares * price;
+        const profit = currentValue - totalInvest;
+        const stockReturn = profit / totalInvest;
+
+        stockReturns.push({
+          date: format(date, 'yyyy.MM'),
+          return: stockReturn,
+          returnPercent: formatPercent(stockReturn),
+          currentValue: formatAmount(currentValue),
+          profit: formatAmount(profit),
+        })
+      }
 
       return {
-        totalInvestment,
-        currentValue,
-      };
+        totalInvest,
+        stockReturns,
+      }
     }
 
-    const prices = historicalData.map((el) => el.adjClose as number);
-    const calculateFn = method === 1 ? calculateLSI : calculateDCA;
-    const { totalInvestment, currentValue } = calculateFn(amount, prices);
 
-    const fixedCurrentValue = Math.floor(currentValue);
-    const profit = fixedCurrentValue - totalInvestment;
-    const profitPercent = parseFloat(
-      ((profit / totalInvestment) * 100).toFixed(2),
-    ); // 수익률(%)
+
+    const doCalculate = async (symbol: string) => {
+      const queryOptions: HistoricalOptionsEventsHistory = {
+        period1: date1,
+        period2: date2,
+        interval: '1mo',
+      };
+       const historicalData = await yahooFinance.historical(symbol, queryOptions);
+   
+      const quotes = historicalData.map((el) => ({
+        date: el.date,
+        price: el.adjClose as number,
+      }));
+
+      const calculateFn = method === 1 ? calculateLSI : calculateDCA;
+      return calculateFn(amount, quotes);
+    }
+
+    // 유저가 요청한 데이터
+    const { totalInvest, stockReturns } = await doCalculate(symbol[0] as string);
+    
+    // 비교를 위한 데이터
+    const { stockReturns: VOO_StockReturns} = await doCalculate('VOO');
+
+    const {
+      currentValue: lastCurrentValue,
+      profit: lastProfit,
+      returnPercent: lastReturnPercent,
+    } = stockReturns[stockReturns.length-1]!;
+
+    const investmentHistory: InvestmentHistory[] = stockReturns.map((el, index) => {
+      const voo = VOO_StockReturns[index]!
+
+      return {
+        ...el,
+        // baseReturn: 0,
+        // baseReturnPercent: 0,
+        // baseCurrentValue: 0,
+        // baseProfit: 0,
+        baseReturn: voo.return,
+        baseReturnPercent: voo.returnPercent,
+        baseCurrentValue: voo.currentValue,
+        baseProfit: voo.profit,
+      }
+    })
 
     return {
-      totalInvestment,
-      currentValue: fixedCurrentValue,
-      profit,
-      profitPercent,
+      totalInvestment : totalInvest,
+      currentValue: lastCurrentValue,
+      profit : lastProfit,
+      profitPercent : lastReturnPercent,
       startDate: date1,
       endDate: date2,
-      duration: prices.length,
+      duration: stockReturns.length,
+      investmentHistory: investmentHistory,
     };
   }
 }
