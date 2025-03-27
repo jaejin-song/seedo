@@ -4,11 +4,11 @@ import { Card, CardContent } from "@repo/ui/components/card";
 import { cn } from "@repo/ui/lib/utils";
 import { format } from "date-fns";
 
-interface ResultInfoProps extends React.ComponentProps<"div"> {
+interface ResultInfoProps {
   result: CalculatorResult;
 }
 
-export function ResultInfo({ result, ...props }: ResultInfoProps) {
+export function ResultInfo({ result }: ResultInfoProps) {
   const formatAmount = (val: number) => {
     return `${val.toLocaleString()}원 (${formatKoreanCurrency(val)})`;
   };
@@ -32,7 +32,7 @@ export function ResultInfo({ result, ...props }: ResultInfoProps) {
   };
 
   return (
-    <Card {...props}>
+    <Card>
       <CardContent>
         <div className="flex flex-col gap-10">
           <h2 className="text-4xl font-semibold leading-14">

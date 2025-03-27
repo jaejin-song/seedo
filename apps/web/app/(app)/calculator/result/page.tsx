@@ -1,4 +1,5 @@
 import CalculatorLayout from "@/components/calculator-layout";
+import { ResultGraph } from "@/components/calculator/result-graph";
 import { ResultInfo } from "@/components/calculator/result-info";
 import { API_ROUTES } from "@/const/api";
 import { apiInstance } from "@/lib/ky";
@@ -48,8 +49,9 @@ export default async function Page({
   return (
     <CalculatorLayout title="수익률 계산 결과">
       <div className="flex justify-center">
-        <div className="flex flex-col gap-6">
-          <ResultInfo className="w-4xl" result={result} />
+        <div className="flex flex-col gap-6 w-4xl">
+          <ResultInfo result={result} />
+          <ResultGraph result={result} />
           <div className="flex justify-center gap-6">
             <Button size="lg" asChild>
               <Link href="/calculator">다시 계산하기</Link>
