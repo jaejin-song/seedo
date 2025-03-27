@@ -1,4 +1,6 @@
 /** @type {import("prettier").Config} */
-module.exports = {
+const config = {
   ...require('@repo/eslint-config/prettier-base'),
 };
+
+module.exports = config;

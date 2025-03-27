@@ -1,15 +1,15 @@
 {
   "name": "@repo/eslint-config",
   "version": "0.0.0",
-  "type": "module",
   "private": true,
-  "exports": {
-    "./base": "./base.js",
-    "./nest-js": "./nest.js",
-    "./next-js": "./next.js",
-    "./prettier-base": "./prettier-base.js",
-    "./react-internal": "./react-internal.js"
-  },
+  "files": [
+    "base.js",
+    "library.js",
+    "nest.js",
+    "next.js",
+    "prettier-base.js",
+    "react-internal.js"
+  ],
   "devDependencies": {
     "@next/eslint-plugin-next": "^15.1.7",
     "@typescript-eslint/eslint-plugin": "^8.24.1",
