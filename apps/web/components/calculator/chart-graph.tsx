@@ -1,6 +1,6 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   ChartConfig,
@@ -10,33 +10,34 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@repo/ui/components/chart";
-
-const chartData = [
-  { month: "January", desktop: 186, mobile: 80 },
-  { month: "February", desktop: 305, mobile: 200 },
-  { month: "March", desktop: 237, mobile: 120 },
-  { month: "April", desktop: 73, mobile: 190 },
-  { month: "May", desktop: 209, mobile: 130 },
-  { month: "June", desktop: 214, mobile: 140 },
-];
-
-const sample = [
-  { month: "2024.01", portfolio: 10, sp: 10 },
-  { month: "2024.02", portfolio: 10, sp: 10 },
-];
+import { CalculatorResult } from "@/types/calculator";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  portfolio: {
+    label: "Portfolio",
     color: "var(--chart-1)",
   },
-  mobile: {
-    label: "Mobile",
+  voo: {
+    label: "VOO",
     color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
-export function Component() {
+interface ProfitChartProps {
+  result: CalculatorResult;
+}
+
+export function ProfitChart({ result }: ProfitChartProps) {
+  const chartData = result.investmentHistory.map((el) => ({
+    date: el.date,
+    portfolio: el.returnPercent,
+    voo: el.baseReturnPercent,
+  }));
+
+  const wrapperStyle = {
+    width: "150px",
+  };
+
   return (
     <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
       <AreaChart
@@ -48,55 +49,46 @@ export function Component() {
         }}
       >
         <CartesianGrid vertical={false} />
-        <XAxis
-          dataKey="month"
-          tickLine={false}
-          tickMargin={10}
-          axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
+        <XAxis dataKey="date" tickLine={true} tickMargin={10} axisLine={true} />
+        <YAxis tickFormatter={(value) => `${value}%`} />
+        <ChartTooltip
+          cursor={false}
+          content={<ChartTooltipContent />}
+          wrapperStyle={wrapperStyle}
         />
-        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
         <ChartLegend content={<ChartLegendContent />} />
         <defs>
-          <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
+          <linearGradient id="fillPortfolio" x1="0" y1="0" x2="0" y2="1">
             <stop
               offset="5%"
-              stopColor="var(--color-desktop)"
+              stopColor="var(--color-portfolio)"
               stopOpacity={0.8}
             />
             <stop
               offset="95%"
-              stopColor="var(--color-desktop)"
+              stopColor="var(--color-portfolio)"
               stopOpacity={0.1}
             />
           </linearGradient>
-          <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-            <stop
-              offset="5%"
-              stopColor="var(--color-mobile)"
-              stopOpacity={0.8}
-            />
-            <stop
-              offset="95%"
-              stopColor="var(--color-mobile)"
-              stopOpacity={0.1}
-            />
+          <linearGradient id="fillVOO" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="var(--color-voo)" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="var(--color-voo)" stopOpacity={0.1} />
           </linearGradient>
         </defs>
         <Area
-          dataKey="mobile"
+          dataKey="voo"
           type="natural"
-          fill="url(#fillMobile)"
+          fill="url(#fillVOO)"
           fillOpacity={0.4}
-          stroke="var(--color-mobile)"
+          stroke="var(--color-voo)"
           stackId="a"
         />
         <Area
-          dataKey="desktop"
+          dataKey="portfolio"
           type="natural"
-          fill="url(#fillDesktop)"
+          fill="url(#fillPortfolio)"
           fillOpacity={0.4}
-          stroke="var(--color-desktop)"
+          stroke="var(--color-portfolio)"
           stackId="a"
         />
       </AreaChart>

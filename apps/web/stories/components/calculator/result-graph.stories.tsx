@@ -1,5 +1,6 @@
 import { ResultGraph } from "@/components/calculator/result-graph";
 import { Meta, StoryObj } from "@storybook/react";
+import { data } from "./data";
 
 const meta: Meta<typeof ResultGraph> = {
   title: "Components/Calculator/Result Graph",
@@ -8,15 +9,7 @@ const meta: Meta<typeof ResultGraph> = {
     layout: "centered",
   },
   args: {
-    result: {
-      totalInvestment: 100000000,
-      currentValue: 101116013,
-      profit: 1116013,
-      profitPercent: 1.12,
-      startDate: new Date(2025, 0, 1),
-      endDate: new Date(2025, 2, 1),
-      duration: 3,
-    },
+    result: data,
   },
   decorators: [
     (Story) => (
@@ -31,17 +24,3 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Plus: Story = {};
-
-export const Minus: Story = {
-  args: {
-    result: {
-      totalInvestment: 100000000,
-      currentValue: 9927190,
-      profit: -72810,
-      profitPercent: -0.73,
-      startDate: new Date(2025, 0, 1),
-      endDate: new Date(2025, 2, 1),
-      duration: 3,
-    },
-  },
-};

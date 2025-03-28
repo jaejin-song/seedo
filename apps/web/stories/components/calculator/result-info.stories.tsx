@@ -1,5 +1,6 @@
 import { ResultInfo } from "@/components/calculator/result-info";
 import { Meta, StoryObj } from "@storybook/react";
+import { data } from "./data";
 
 const meta = {
   title: "Components/Calculator/Result Info",
@@ -16,6 +17,7 @@ const meta = {
       startDate: new Date(2025, 0, 1),
       endDate: new Date(2025, 2, 1),
       duration: 3,
+      investmentHistory: data.investmentHistory,
     },
   },
 } satisfies Meta<typeof ResultInfo>;
@@ -35,6 +37,7 @@ export const Minus: Story = {
       startDate: new Date(2025, 0, 1),
       endDate: new Date(2025, 2, 1),
       duration: 3,
+      investmentHistory: data.investmentHistory,
     },
   },
 };

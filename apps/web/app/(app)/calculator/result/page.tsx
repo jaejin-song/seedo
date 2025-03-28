@@ -41,6 +41,7 @@ export default async function Page({
 }) {
   const _searchParams = await searchParams;
 
+  // 함수를 카드 안으로?
   const result = await fetchResult(_searchParams);
   if (!result) {
     redirect("/calculator");

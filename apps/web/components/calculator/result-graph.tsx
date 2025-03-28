@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@repo/ui/components/card";
-import { Component } from "./chart-graph";
+import { ProfitChart } from "./chart-graph";
 
 interface ResultGraphProps {
   result: CalculatorResult;
@@ -18,7 +18,7 @@ export function ResultGraph({ result }: ResultGraphProps) {
         <CardTitle>수익률 그래프</CardTitle>
       </CardHeader>
       <CardContent>
-        <Component />
+        <ProfitChart result={result} />
       </CardContent>
     </Card>
   );

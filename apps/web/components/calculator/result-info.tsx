@@ -31,6 +31,12 @@ export function ResultInfo({ result }: ResultInfoProps) {
     return `${startDate} ~ ${endDate} ( ${monthText} )`;
   };
 
+  const getProfitColor = (profit: number) => {
+    return profit >= 0
+      ? "text-red-600 dark:text-red-700"
+      : "text-blue-600 dark:text-blue-700";
+  };
+
   return (
     <Card>
       <CardContent>
@@ -41,7 +47,7 @@ export function ResultInfo({ result }: ResultInfoProps) {
             <span
               className={cn(
                 "text-4xl font-semibold",
-                result.profit >= 0 ? "text-red-500" : "text-blue-500"
+                getProfitColor(result.profit)
               )}
             >
               {`${formatKoreanCurrency(result.profit)}`}
@@ -69,13 +75,7 @@ export function ResultInfo({ result }: ResultInfoProps) {
                 </td>
                 <td className="border light:border-gray-300 px-5 py-3 text-lg text-muted-foreground">
                   <span>{`${formatAmount(result.currentValue)} / `}</span>
-                  <span
-                    className={cn(
-                      result.profitPercent >= 0
-                        ? "text-red-500"
-                        : "text-blue-500"
-                    )}
-                  >
+                  <span className={cn(getProfitColor(result.profit))}>
                     {`${formatNumberSign(result.profitPercent)}%`}
                   </span>
                 </td>
